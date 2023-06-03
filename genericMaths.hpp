@@ -1,5 +1,4 @@
 #pragma once
-namespace GenericMaths
-{
-    #include "maths.hpp"
+namespace GenericMaths {
+#include "maths.hpp"
 }

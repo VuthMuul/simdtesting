@@ -1,5 +1,4 @@
 #pragma once
-namespace SimdMaths
-{
-    #include "maths.hpp"
+namespace SimdMaths {
+#include "maths.hpp"
 }

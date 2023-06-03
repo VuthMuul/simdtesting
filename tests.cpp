@@ -1,13 +1,13 @@
 #include <cassert>
 #include <cstdlib>
-#include <string>
 #include <iostream>
 #include <random>
+#include <string>
 
-#include "tests.hpp"
-#include "testRunner.hpp"
 #include "genericMaths.hpp"
 #include "simdMaths.hpp"
+#include "testRunner.hpp"
+#include "tests.hpp"
 
 using namespace std;
 
@@ -29,8 +29,9 @@ void Setup() {
     FillVec(Vec2, VEC_LEN, seed2);
 
     int i;
-    for(i = 0; i < VEC_LEN; i++)
-        if(Vec1[i] != 0 || Vec2[i] != 0) break;
+    for (i = 0; i < VEC_LEN; i++)
+        if (Vec1[i] != 0 || Vec2[i] != 0)
+            break;
     assert(i != VEC_LEN);
 }
 
@@ -39,25 +40,22 @@ void TestAdd() {
 }
 
 void RunTests(
-        function<void(float[], float[], float[], int)> genericFunc,
-        function<void(float[], float[], float[], int)> simdFunc,
-        string test
-    ) {
+    function<void(float[], float[], float[], int)> genericFunc,
+    function<void(float[], float[], float[], int)> simdFunc,
+    string test) {
     cout << test;
-    
+
     auto genTime = RunTest(
-            [genericFunc](){ genericFunc(Expected, Vec1, Vec2, VEC_LEN); },
-            test,
-            "Generic"
-        );
-    
+        [genericFunc]() { genericFunc(Expected, Vec1, Vec2, VEC_LEN); },
+        test,
+        "Generic");
+
     cout << ",Generic," << genTime;
-    
+
     auto simdTime = RunTest(
-            [simdFunc](){ simdFunc(Actual, Vec1, Vec2, VEC_LEN); },
-            test,
-            "SIMD"
-        );
+        [simdFunc]() { simdFunc(Actual, Vec1, Vec2, VEC_LEN); },
+        test,
+        "SIMD");
 
     cout << ",SIMD," << simdTime << ",";
     ValidateVectors(Expected, Actual, VEC_LEN);
@@ -72,5 +70,5 @@ void ValidateVectors(float expected[], float actual[], int len) {
 }
 
 void PrintTimeDelta(int64_t generic, int64_t simd) {
-    cout << (((float)generic/simd)-1.0)*100.0 << "%" << endl;
+    cout << (((float)generic / simd) - 1.0) * 100.0 << "%" << endl;
 }

@@ -1,7 +1,7 @@
 #include <chrono>
-#include <string>
 #include <iostream>
 #include <random>
+#include <string>
 
 #include "testRunner.hpp"
 
@@ -10,7 +10,7 @@ using namespace std::chrono;
 
 int64_t RunTest(std::function<void()> testfunc, string description, string implementation) {
     auto startTime = high_resolution_clock::now();
-    
+
     testfunc();
 
     auto endTime = high_resolution_clock::now();
