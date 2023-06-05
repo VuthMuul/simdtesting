@@ -2,4 +2,5 @@ void Add2V(float* __restrict__ res, float* __restrict__ vec1, float* __restrict_
 void Sub2V(float* __restrict__ res, float* __restrict__ vec1, float* __restrict__ vec2, const int len);
 void Mul2V(float* __restrict__ res, float* __restrict__ vec1, float* __restrict__ vec2, const int len);
 void Div2V(float* __restrict__ res, float* __restrict__ vec1, float* __restrict__ vec2, const int len);
-void Dot2V(float* __restrict__ res, float* __restrict__ vec1, float* __restrict__ vec2, const int len);
+void Dot1x4V(float* __restrict__ res, float* __restrict__ vec1, float* __restrict__ vec2, const int len);
+void Dot4x4V(float* __restrict__ res, float* __restrict__ vec1, float* __restrict__ vec2, const int len);

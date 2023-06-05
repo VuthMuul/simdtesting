@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -std=c++20 -mfpu=neon -O3
+CXXFLAGS = -std=c++20 -O2 -ffast-math
 
 main: main.cpp tests.o genericMaths.o neonMaths.o 
 	$(CXX) $(CXXFLAGS) -o main main.cpp tests.o genericMaths.o neonMaths.o

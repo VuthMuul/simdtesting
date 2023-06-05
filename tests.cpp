@@ -19,14 +19,17 @@ using namespace chrono;
 float Vec1[VEC_LEN], Vec2[VEC_LEN], GenericVec[VEC_LEN], SimdVec[VEC_LEN];
 
 void RunTests() {
+    cout << "Test,Imp 1,Time (ms),Imp 2,Time (ms),Speedup %" << endl;
     COMP_FUNCS(Add2V);
     COMP_FUNCS(Sub2V);
     COMP_FUNCS(Mul2V);
-    // COMP_FUNCS(Div2V);
-    // COMP_FUNCS(Dot2V);
+    COMP_FUNCS(Div2V);
+    COMP_FUNCS(Dot1x4V);
+    COMP_FUNCS(Dot4x4V);
 }
 
 void Setup() {
+    cout << "generating two vectors of length " << VEC_LEN << endl;
     FillVec(Vec1, SEED_A);
     FillVec(Vec2, SEED_B);
 
@@ -55,7 +58,7 @@ void CompareTests(
     for(int i = 0; i < SAMPLE_COUNT; i++) {
         int genTime = TimeExecution([genericFunc]() { genericFunc(GenericVec, Vec1, Vec2, VEC_LEN); });
         int simdTime = TimeExecution([simdFunc]() { simdFunc(SimdVec, Vec1, Vec2, VEC_LEN); });
-
+        
         ValidateVectors();
 
         bestGenTime = min(bestGenTime, genTime);
@@ -81,7 +84,9 @@ int64_t TimeExecution(function<void()> testfunc) {
 
 void ValidateVectors() {
     for (int i = 0; i < VEC_LEN; i++) {
+        // if (i > 16) break;
         auto result = abs(GenericVec[i] - SimdVec[i]);
+        // cout << GenericVec[i] << " " << SimdVec[i] << " " << result << endl;
         assert(result < TOLERANCE);
     }
 }
