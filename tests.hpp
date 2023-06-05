@@ -11,12 +11,12 @@ void CompareTests(
 
 void Setup();
 void FillVec(float vec[], int seed);
-void ValidateVectors(float vec1[], float vec2[], int length);
+void ValidateVectors();
 
 void RunTests();
 
 const int VEC_LEN = 10'000'000;
 const int SEED_A = 5318008;
 const int SEED_B = 1337;
-const float TOLERANCE = 0.00001;
+const float TOLERANCE = 0.000001;
 const int SAMPLE_COUNT = 5;

@@ -2,8 +2,12 @@
 
 #include "tests.hpp"
 
+using namespace std;
+
 int main() {
-    std::cout << "Test,Imp 1,Time (ms),Imp 2,Time (ms),Speedup %" << std::endl;
+    cout << "generating vectors" << endl;
     Setup();
+    
+    cout << "Test,Imp 1,Time (ms),Imp 2,Time (ms),Speedup %" << endl;
     RunTests();
 }

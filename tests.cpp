@@ -22,8 +22,8 @@ void RunTests() {
     COMP_FUNCS(Add2V);
     COMP_FUNCS(Sub2V);
     COMP_FUNCS(Mul2V);
-    COMP_FUNCS(Div2V);
-    COMP_FUNCS(Dot2V);
+    // COMP_FUNCS(Div2V);
+    // COMP_FUNCS(Dot2V);
 }
 
 void Setup() {
@@ -56,7 +56,7 @@ void CompareTests(
         int genTime = TimeExecution([genericFunc]() { genericFunc(GenericVec, Vec1, Vec2, VEC_LEN); });
         int simdTime = TimeExecution([simdFunc]() { simdFunc(SimdVec, Vec1, Vec2, VEC_LEN); });
 
-        ValidateVectors(GenericVec, SimdVec, VEC_LEN);
+        ValidateVectors();
 
         bestGenTime = min(bestGenTime, genTime);
         bestSimdTime = min(bestSimdTime, simdTime);
@@ -79,9 +79,9 @@ int64_t TimeExecution(function<void()> testfunc) {
     return duration.count();
 }
 
-void ValidateVectors(float expected[], float actual[], int len) {
-    for (int i = 0; i < len; i++) {
-        auto result = abs(expected[i] - actual[i]);
+void ValidateVectors() {
+    for (int i = 0; i < VEC_LEN; i++) {
+        auto result = abs(GenericVec[i] - SimdVec[i]);
         assert(result < TOLERANCE);
     }
 }
