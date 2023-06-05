@@ -1,32 +1,34 @@
 #include <cassert>
-#include <cstdlib>
 #include <iostream>
-#include <random>
 #include <string>
+#include <chrono>
+#include <functional>
+#include <random>
+#include <algorithm>
+#include <limits>
 
 #include "genericMaths.hpp"
 #include "simdMaths.hpp"
-#include "testRunner.hpp"
 #include "tests.hpp"
 
+#define COMP_FUNCS(name) CompareTests(GenericMaths::name, SimdMaths::name, #name)
+
 using namespace std;
+using namespace chrono;
 
-float Vec1[VEC_LEN], Vec2[VEC_LEN], Expected[VEC_LEN], Actual[VEC_LEN];
-void ValidateVectors(float vec1[], float vec2[], int length);
-void PrintTimeDelta(int64_t generic, int64_t simd);
-void RunTests(
-    function<void(float[], float[], float[], int)> genericFunc,
-    function<void(float[], float[], float[], int)> simdFunc,
-    string test);
+float Vec1[VEC_LEN], Vec2[VEC_LEN], GenericVec[VEC_LEN], SimdVec[VEC_LEN];
 
-const float TOLERANCE = 0.00001;
+void RunTests() {
+    COMP_FUNCS(Add2V);
+    COMP_FUNCS(Sub2V);
+    COMP_FUNCS(Mul2V);
+    COMP_FUNCS(Div2V);
+    COMP_FUNCS(Dot2V);
+}
 
 void Setup() {
-    const int seed1 = 5318008;
-    const int seed2 = 1337;
-
-    FillVec(Vec1, VEC_LEN, seed1);
-    FillVec(Vec2, VEC_LEN, seed2);
+    FillVec(Vec1, SEED_A);
+    FillVec(Vec2, SEED_B);
 
     int i;
     for (i = 0; i < VEC_LEN; i++)
@@ -35,31 +37,46 @@ void Setup() {
     assert(i != VEC_LEN);
 }
 
-void TestAdd() {
-    RunTests(GenericMaths::Add, SimdMaths::Add, "Add");
+void FillVec(float vec[], int seed) {
+    mt19937 generator(seed);
+    uniform_real_distribution<float> distribution(0.0, 1.0);
+
+    for (int i = 0; i < VEC_LEN; i++)
+        vec[i] = distribution(generator);
 }
 
-void RunTests(
-    function<void(float[], float[], float[], int)> genericFunc,
-    function<void(float[], float[], float[], int)> simdFunc,
-    string test) {
+void CompareTests(
+        function<void(float[], float[], float[], int)> genericFunc,
+        function<void(float[], float[], float[], int)> simdFunc,
+        string test
+    ) {
+
+    int bestGenTime = numeric_limits<int>::max(), bestSimdTime = numeric_limits<int>::max();
+    for(int i = 0; i < SAMPLE_COUNT; i++) {
+        int genTime = TimeExecution([genericFunc]() { genericFunc(GenericVec, Vec1, Vec2, VEC_LEN); });
+        int simdTime = TimeExecution([simdFunc]() { simdFunc(SimdVec, Vec1, Vec2, VEC_LEN); });
+
+        ValidateVectors(GenericVec, SimdVec, VEC_LEN);
+
+        bestGenTime = min(bestGenTime, genTime);
+        bestSimdTime = min(bestSimdTime, simdTime);
+    }
+
     cout << test;
+    cout << ",Generic," << bestGenTime;
+    cout << ",SIMD," << bestSimdTime << ",";
+    cout << (((float)bestGenTime / bestSimdTime) - 1.0) * 100.0 << "%" << endl;
+}
 
-    auto genTime = RunTest(
-        [genericFunc]() { genericFunc(Expected, Vec1, Vec2, VEC_LEN); },
-        test,
-        "Generic");
+int64_t TimeExecution(function<void()> testfunc) {
+    auto startTime = high_resolution_clock::now();
 
-    cout << ",Generic," << genTime;
+    testfunc();
 
-    auto simdTime = RunTest(
-        [simdFunc]() { simdFunc(Actual, Vec1, Vec2, VEC_LEN); },
-        test,
-        "SIMD");
+    auto endTime = high_resolution_clock::now();
+    auto duration = duration_cast<milliseconds>(endTime - startTime);
 
-    cout << ",SIMD," << simdTime << ",";
-    ValidateVectors(Expected, Actual, VEC_LEN);
-    PrintTimeDelta(genTime, simdTime);
+    return duration.count();
 }
 
 void ValidateVectors(float expected[], float actual[], int len) {
@@ -67,8 +84,4 @@ void ValidateVectors(float expected[], float actual[], int len) {
         auto result = abs(expected[i] - actual[i]);
         assert(result < TOLERANCE);
     }
-}
-
-void PrintTimeDelta(int64_t generic, int64_t simd) {
-    cout << (((float)generic / simd) - 1.0) * 100.0 << "%" << endl;
 }

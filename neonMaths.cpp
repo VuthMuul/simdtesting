@@ -1,27 +1,34 @@
 #include "simdMaths.hpp"
+
 namespace SimdMaths {
-    void Add(float res[], float vec1[], float vec2[], int len) {
+    void Add2V(float res[], float vec1[], float vec2[], int len) {
         for (int i = 0; i < len; i++) {
             res[i] = vec1[i] + vec2[i];
         }
     }
 
-    void Sub(float res[], float vec1[], float vec2[], int len) {
+    void Sub2V(float res[], float vec1[], float vec2[], int len) {
         for (int i = 0; i < len; i++) {
             res[i] = vec1[i] - vec2[i];
         }
     }
 
-    void Mul(float res[], float vec1[], float vec2[], int len) {
+    void Mul2V(float res[], float vec1[], float vec2[], int len) {
         for (int i = 0; i < len; i++) {
             res[i] = vec1[i] * vec2[i];
         }
     }
 
-    void Div(float res[], float vec1[], float vec2[], int len) {
+    void Div2V(float res[], float vec1[], float vec2[], int len) {
         for (int i = 0; i < len; i++) {
             res[i] = vec1[i] / vec2[i];
         }
+    }
+
+    void Dot2V(float res[], float vec1[], float vec2[], int len) {
+        res[0] = 0.0;
+        for (int i = 0; i < len; i++)
+            res[0] += vec1[i] * vec2[i];
     }
 
 }
