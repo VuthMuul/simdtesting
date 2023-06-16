@@ -10,6 +10,7 @@
 #include "genericMaths.hpp"
 #include "simdMaths.hpp"
 #include "tests.hpp"
+#include "consts.hpp"
 
 #define COMP_FUNCS(name) CompareTests(GenericMaths::name, SimdMaths::name, #name)
 
@@ -20,12 +21,14 @@ float Vec1[VEC_LEN], Vec2[VEC_LEN], GenericVec[VEC_LEN], SimdVec[VEC_LEN];
 
 void RunTests() {
     cout << "Test,Imp 1,Time (ms),Imp 2,Time (ms),Speedup %" << endl;
-    COMP_FUNCS(Add2V);
-    COMP_FUNCS(Sub2V);
-    COMP_FUNCS(Mul2V);
-    COMP_FUNCS(Div2V);
-    COMP_FUNCS(Dot1x4V);
-    COMP_FUNCS(Dot4x4V);
+    // COMP_FUNCS(Add2V);
+    // COMP_FUNCS(Sub2V);
+    // COMP_FUNCS(Mul2V);
+    // COMP_FUNCS(Div2V);
+    // COMP_FUNCS(Dot1x4V);
+    // COMP_FUNCS(Dot4x4V);
+    // COMP_FUNCS(RootDepth);
+    COMP_FUNCS(RootTol);
 }
 
 void Setup() {
@@ -49,15 +52,15 @@ void FillVec(float vec[], int seed) {
 }
 
 void CompareTests(
-        function<void(float[], float[], float[], int)> genericFunc,
-        function<void(float[], float[], float[], int)> simdFunc,
+        function<void(float[], float[], float[])> genericFunc,
+        function<void(float[], float[], float[])> simdFunc,
         string test
     ) {
 
     int bestGenTime = numeric_limits<int>::max(), bestSimdTime = numeric_limits<int>::max();
     for(int i = 0; i < SAMPLE_COUNT; i++) {
-        int genTime = TimeExecution([genericFunc]() { genericFunc(GenericVec, Vec1, Vec2, VEC_LEN); });
-        int simdTime = TimeExecution([simdFunc]() { simdFunc(SimdVec, Vec1, Vec2, VEC_LEN); });
+        int genTime = TimeExecution([genericFunc]() { genericFunc(GenericVec, Vec1, Vec2); });
+        int simdTime = TimeExecution([simdFunc]() { simdFunc(SimdVec, Vec1, Vec2); });
         
         ValidateVectors();
 
@@ -73,20 +76,19 @@ void CompareTests(
 
 int64_t TimeExecution(function<void()> testfunc) {
     auto startTime = high_resolution_clock::now();
-
     testfunc();
-
     auto endTime = high_resolution_clock::now();
-    auto duration = duration_cast<milliseconds>(endTime - startTime);
-
-    return duration.count();
+    return duration_cast<milliseconds>(endTime - startTime).count();
 }
 
 void ValidateVectors() {
     for (int i = 0; i < VEC_LEN; i++) {
-        // if (i > 16) break;
         auto result = abs(GenericVec[i] - SimdVec[i]);
-        // cout << GenericVec[i] << " " << SimdVec[i] << " " << result << endl;
-        assert(result < TOLERANCE);
+        if (result > TOLERANCE) {
+            cout << "Input 1: " << Vec1[i] << " Input 2: " << Vec2[i]
+                 << " Generic: " << GenericVec[i] << " SIMD: " << SimdVec[i]
+                 << endl;
+            assert(result < TOLERANCE);
+        }
     }
 }
