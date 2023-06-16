@@ -27,7 +27,7 @@ void RunTests() {
     // COMP_FUNCS(Div2V);
     // COMP_FUNCS(Dot1x4V);
     // COMP_FUNCS(Dot4x4V);
-    // COMP_FUNCS(RootDepth);
+    COMP_FUNCS(RootDepth);
     COMP_FUNCS(RootTol);
 }
 

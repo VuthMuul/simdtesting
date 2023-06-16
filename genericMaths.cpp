@@ -1,3 +1,4 @@
+#include <iostream>
 #include <cmath>
 
 #include "genericMaths.hpp"
@@ -50,7 +51,7 @@ namespace GenericMaths {
             do {
                 prev = next;
                 next = (prev + s/prev) * 0.5f ;
-            } while (abs(next-prev) > ITER_TOL);
+            } while (std::abs(next-prev) > ITER_TOL);
             res[i] = next;
         }
     }
