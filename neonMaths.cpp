@@ -78,17 +78,33 @@ namespace SimdMaths {
             vst1q_f32(res+i/4, vmlaq_f32(part, quadA.val[3], quadB.val[3]));
         }
     }
-
+    
+    /**
+     * Performs Heron's Method of solving the square root.
+     * Computes 4 roots at once.
+     * As it's an infinite series, cut it short based on a fixed depth limit
+     * It calculates the mean of the current approximation and original number divided by it.
+     * essentially does res[i] = (res[i] + vec1[i]/res[i]) * 0.5f; using three neon intrinsics
+     * starter guess is in the middle fo 0 and 1, and based on "undoing" the square root
+    */
     void RootDepth(float* __restrict__ res, float* __restrict__ vec1, float* __restrict__ vec2) {
         for (int i = 0; i < (VEC_LEN & ~3); i+=4) {
             float32x4_t s = vld1q_f32(vec1+i);
-            float32x4_t ans = vmulq_n_f32(s, dist5); //x0 = S * sqrt(0.5)/0.5
+            float32x4_t ans = vmulq_n_f32(s, dist5); //x0 = S * sqrt(1/0.5) = s * sqrt(2)
             for (int j = 0; j < ITER_DEPTH; j++)
                 ans = vmulq_n_f32(vaddq_f32(ans, vdivq_f32(s, ans)), 0.5); // xn+1 = (xn + S/xn)/2;
             vst1q_f32(res+i, ans);
         }
     }
 
+    /**
+     * Performs Heron's Method of solving the square root.
+     * This time stop when the absolute difference of the current and previous iteration is less than a tolerance.
+     * Rather than computing 4 roots at once, have 4 starting guesses so that one guess is close to the real value.
+     * As vectors cannot be directly used in an if statement, the loop stops when any one is at the tolerance
+     * but must then manually check which element guess reached the tolerance and store that value.
+     * doing two iterations withit the same loop can sometimes improve speedup unless the guess was bang on first time.
+    */
     const float32x4_t vdist = {dist2, dist4, dist6, dist8};
     void RootTol(float* __restrict__ res, float* __restrict__ vec1, float* __restrict__ vec2) {
         for (int i = 0; i < (VEC_LEN & ~3); i++) {
