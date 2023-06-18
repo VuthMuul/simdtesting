@@ -23,13 +23,13 @@ int ITER_DEPTH;
 
 void RunTests() {
     cout << "Test,Imp 1,Time (ms),Imp 2,Time (ms),Speedup %" << endl;
-    // COMP_FUNCS(Add2V);
-    // COMP_FUNCS(Sub2V);
-    // COMP_FUNCS(Mul2V);
-    // COMP_FUNCS(Div2V);
-    // COMP_FUNCS(Dot1x4V);
-    // COMP_FUNCS(Dot4x4V);
-    // COMP_FUNCS(RootTol);
+    COMP_FUNCS(Add2V);
+    COMP_FUNCS(Sub2V);
+    COMP_FUNCS(Mul2V);
+    COMP_FUNCS(Div2V);
+    COMP_FUNCS(Dot1x4V);
+    COMP_FUNCS(Dot4x4V);
+    COMP_FUNCS(RootTol);
     for(int i = 1; i < MAX_ITER; i++) {
         ITER_DEPTH = i;
         COMP_FUNCS(RootDepth);
