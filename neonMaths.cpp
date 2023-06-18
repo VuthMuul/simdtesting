@@ -63,7 +63,7 @@ namespace SimdMaths {
 
     /**
      * Load four 4 floats into two vectors: vecAx4 = A[i:i+16], vecBx4 = B[i:i+6]
-     * Vectors are interleaved -> [a,b,c,d,a,b,c,d,...] > [a,a,a,a,b,b,b,b,...]
+     * Vectors are interleaved -> [1a,1b,1c,1d,2a,2b,2c,2d,...] > [[1a,2a,3a,4a],[1b,2b,3b,4b],...]
      * Perform vecR = vecA[0] .* vecB[0] + ... + vecA[3] .* vecB[3]
      * Store into R[i/4] := vecR
      * Increment i by 16 (floats)
